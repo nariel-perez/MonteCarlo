@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def bf(alpha, chi, N_m, N_ch):
-  '''
-  Calculo de la energía 'interna' del gel... energía atribuida al swelling del mismo.
-  '''
+    '''
+    Calculo de la energía 'interna' del gel... energía atribuida al swelling del mismo.
+    '''
     term1 = (alpha**3 - 1) * np.log(1 - alpha**(-3))
     term2 = chi * (1 - alpha**(-3))
     term3 = (3/2) * N_ch * (alpha**2 - np.log(alpha) - 1)
@@ -12,24 +12,29 @@ def bf(alpha, chi, N_m, N_ch):
     return energy
 
 def interaccion(ai, aj, r, epsilon):
-  '''
-  Potencial de Hertz para dos particulas de radiso ai y aj a una distancia r
-  '''
-    if r < ai + aj:
+    '''
+    Potencial de Hertz para dos particulas de radiso ai y aj a una distancia r
+    '''
+    if r < (ai + aj):
         return epsilon * (1 - (r / (ai + aj))**(5/2))
     else:
         return 0
     
 def pair_energy(radios, posiciones, epsilon, L):
-  '''
-  energía total del sistema de N partículas. Usando el potencial de Hertz
-  '''
+    '''
+    energía total del sistema de N partículas. Usando el potencial de Hertz
+    '''
+    energia_total = 0.0 
     N = len(radios)
-    x = np.array(posiciones)
-    dx = x[:, np.newaxis, :] - x[np.newaxis, :, :]
-    dx = dx - L * np.round(dx / L)
-    r = np.sqrt(np.sum(dx**2, axis=2))
-    interactions = np.triu(interaccion(radios[:, np.newaxis], radios[np.newaxis, :], r, epsilon), k=1)
+    for i in range(N):
+      for j in range(i+1,N):
+        dx = posiciones[i,:] - posiciones[j,:]
+        dx = -L*np.round(dx/L)
+        r = np.sqrt(np.sum(dx**2))
+        ai = radios[i]
+        aj = radios[j]
+        energia_total += interaccion(ai, aj, r, epsilon)
+    
     return np.sum(interactions)
 
 def simulacion(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
@@ -128,7 +133,7 @@ T = 300
 energyt, alphas_values, energy_values = simulacion(1000, L, a0, epsilon, N_m, chi, N_ch, K, T)
 
 # histograma
-histo_alphas(alphas_values)
+#histo_alphas(alphas_values)
 
 
 
