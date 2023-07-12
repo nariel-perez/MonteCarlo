@@ -66,6 +66,14 @@ def simulacion(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
             bf_new = bf0.copy()
             # Modificación de las variables
             x_new[j, :] += dx
+            #Condiciones de contorno:
+            '''
+            SINTAXIS: a = np.where(condicion, x,y)
+            Si la condiciones es True: el valor de a es x, de ser False le asigna un valor de y.
+            Es decir si al mover la particula j se sale de la mitad de la caja (L/2) ajusta la variable a x_new[j,:] - L/2
+            de no salirse (condición False) no ajusta nada.
+            Del mismo modo se compara cuando la condición sea ser menor que L/2
+            '''
             x_new[j, :] = np.where(x_new[j, :] > L/2, x_new[j, :] - L/2, x_new[j, :])
             x_new[j, :] = np.where(x_new[j, :] < L/2, x_new[j, :] + L/2, x_new[j, :])
             
