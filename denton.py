@@ -35,21 +35,28 @@ def pair_energy(radios, posiciones, epsilon, L):
         aj = radios[j]
         energia_total += interaccion(ai, aj, r, epsilon)
     
-    return np.sum(interactions)
+    return energy_total
 
 def simulacion(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
     N = 500
     beta = 1 / (K * T) # No necesario 
     energyt = []
     alphas_values = []
-    
+    # podría ser otro valor, por lo que sería mejor: bf0 = [bi]*N , en donde bi es la energía inicial (distinta de cero)  
+    bf0 = np.zeros(N)
     a0_array = np.full(N, a0) # valores iniciales de radios
+    #cambio a valores de radio aleatorio
+    for i in range(N):
+        alpha = np.random.uniform(1.1, 10.0)
+        a0_array[i] *= alpha
+        bf0[i] +=  bf(alpha, chi, N_m, N_ch)    
+    
+    
     posiciones = L * np.random.rand(N, 3) #posiciones iniciales en la caja
     # Copia de los radios, para guardar los cambios nuevos
     radios = a0_array.copy()
     #energias iniciales, no hay swelling. La energía de cada partícula es cero... casualmente
-    # podría ser otro valor, por lo que sería mejor: bf0 = [bi]*N , en donde bi es la energía inicial (distinta de cero)  
-    bf0 = np.zeros(N)
+   
     #calculo de la energía inicial por la interacción de a pares. 
     vh0 = pair_energy(radios, posiciones, epsilon, L)
     ee = np.sum(bf0) + vh0 #energía total inicial... sin utilidad en este punto.(?)
@@ -99,7 +106,7 @@ def simulacion(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
                 bf0 = bf_new.copy()
                 ee = np.sum(bf0) + vh0
                 alphas_values.append(alpha)
-                energy_values.append(ee)
+                energyt.append(ee)
             
             if paso % 50 == 0:
                 energyt.append(ee)
