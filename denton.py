@@ -105,18 +105,19 @@ def simulacion(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
                 vh0 = vh_i
                 bf0 = bf_new.copy()
                 ee = np.sum(bf0) + vh0
-                alphas_values.append(alpha)
-                energyt.append(ee)
+                if paso > 1000:
+                    alphas_values.append(alpha)
+                    energyt.append(ee)           
             
-            if paso % 50 == 0:
-                energyt.append(ee)
+            if paso % 1000 == 0:
+                #energyt.append(ee)
                 print(f'paso: {paso}, energia total: {ee:.2f}')
             
             
     
     print(paso, acc)
     
-    return energyt, alphas_values, energy_values
+    return energyt, alphas_values
 
 def histo_alphas(alphas_values,energy_values):
   plt.hist(alphas_values, bins=20, density=True, weights=energy_values)
@@ -137,7 +138,7 @@ K = 1.380649e-23
 T = 300
 
 # Ejecutar simulación
-energyt, alphas_values, energy_values = simulacion(1000, L, a0, epsilon, N_m, chi, N_ch, K, T)
+energyt, alphas_values = simulacion(1000, L, a0, epsilon, N_m, chi, N_ch, K, T)
 
 # histograma
 #histo_alphas(alphas_values)
