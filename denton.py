@@ -20,22 +20,45 @@ def interaccion(ai, aj, r, epsilon):
     else:
         return 0
     
+#def pair_energy(radios, posiciones, epsilon, L):
+#    '''
+#    energía total del sistema de N partículas. Usando el potencial de Hertz
+#    '''
+#    energia_total = 0.0 
+#    N = len(radios)
+#    for i in range(N):
+#     for j in range(i+1,N):
+#        dx = posiciones[i,:] - posiciones[j,:]
+#        dx = -L*np.round(dx/L)
+#        r = np.sqrt(np.sum(dx**2))
+#        ai = radios[i]
+#        aj = radios[j]
+#        energia_total += interaccion(ai, aj, r, epsilon)    
+#    return energy_total
+
+
 def pair_energy(radios, posiciones, epsilon, L):
     '''
     energía total del sistema de N partículas. Usando el potencial de Hertz
     '''
     energia_total = 0.0 
     N = len(radios)
+    distancias = np.zeros((N,N))
     for i in range(N):
-      for j in range(i+1,N):
-        dx = posiciones[i,:] - posiciones[j,:]
-        dx = -L*np.round(dx/L)
-        r = np.sqrt(np.sum(dx**2))
+        for j in range(i+1,N):
+            dx = posiciones[i,:] - posiciones[j,:]
+            dx = -L*np.round(dx/L)
+            distancias[i,j] = np.linalg.norm(dx)
+    
+    # Utilizamos numpy.triu_indices para recorrer sólo la mitad superior de la matriz de distancias
+    indices = np.triu_indices(N, k=1)
+    for i,j in zip(indices[0], indices[1]):
+        r = distancias[i,j]
         ai = radios[i]
         aj = radios[j]
         energia_total += interaccion(ai, aj, r, epsilon)
     
-    return energy_total
+    return energia_total
 
 def simulacion(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
     N = 500
