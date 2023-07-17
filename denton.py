@@ -66,7 +66,8 @@ def get_indice(r, radios):
 
     '''
     
-    indice = radios.index(min(radios, key=lambda x: abs(x -r)))
+    #indice = radios.index(min(radios, key=lambda x: abs(x -r))) funciona para listas, pero no con ndarrays.
+    indice = np.argmin(np.abs(radios - r)) 
 
     return indice
 
@@ -180,7 +181,7 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
             Df = bf_i - bf0[j]
             Dvh = vh_i - vh0
             Dtotal = Df + Dvh
-            print(Dtotal)
+            #print(Dtotal)
             
             if Dtotal < 0 or np.random.rand() < np.exp(-beta * Dtotal):
                 acc += 1
@@ -271,7 +272,7 @@ def simulacion_tp(steps, L, a0, epsilon, K, T):
             Df = bf_i - bf0[j] # delta de energia en radio
             Dvh = vh_i - vh0 # delta de energia de a pares
             Dtotal = Df + Dvh
-            print(Dtotal)
+            #print(Dtotal)
             
             ##########
             #### Aceptar o no  el paso
@@ -330,9 +331,10 @@ T = 300
 ########
 ### Modificacion del volumen... el de denton es mas chico!!!!
 ### es necesario trabajar con unidades reducidas ??
-dens= 1.0
-V = (500*8610000)/(0.602*dens) # 7151121600.0
-L = V**(1/3) # 1926.6
+a0 = 30.0
+#V = (500*8610000)/(0.602*dens) # 7151121600 
+V= 45110592.60 #prueba con el volumen de Denton
+L = V**(1/3)
 epsilon = 1.5e3 
 K = 1.380649e-23
 T = 300
