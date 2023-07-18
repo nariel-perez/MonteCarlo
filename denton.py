@@ -297,15 +297,13 @@ def simulacion_tp(steps, L, a0, epsilon, K, T):
     
     return energyt, alphas_values #alphas_values: lista de radios aceptados 
 
-
-
-
-
-
 #####################
 #############################################
 
-
+def guardar_datos(r,e):
+    with open('out-python.dat' ,'w') as out:
+        for i,j in enumerate(r):
+            out.write(f'{j:.2f}\t{e[i]:.2f}\n')
 
 
 
@@ -343,7 +341,7 @@ T = 300
 
 # Ejecutar simulación
 #energyt, alphas_values = simulacion_tp(1000, L, a0, epsilon,K, T)
-
+#guardar_datos(alpha_values, energyt)
 # histograma
 #histo_alphas(alphas_values)
 
