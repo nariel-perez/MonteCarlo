@@ -276,7 +276,9 @@ def simulacion_tp(steps, L, a0, epsilon, K, T):
             
             ##########
             #### Aceptar o no  el paso
-            if Dtotal < 0 or np.random.rand() < np.exp(-beta * Dtotal):
+            if Dtotal < 0 or np.random.rand() < np.exp(-Dtotal):
+                ### ojo que estaba -beta*Dtotal , pero ya todas las energias estan en kt
+                ## no es necesario por beta
                 acc += 1
                 posiciones = x_new.copy()
                 radios = radios_new.copy()
@@ -341,7 +343,7 @@ T = 300
 
 # Ejecutar simulación
 #energyt, alphas_values = simulacion_tp(1000, L, a0, epsilon,K, T)
-#guardar_datos(alpha_values, energyt)
+#guardar_datos(alphas_values, energyt)
 # histograma
 #histo_alphas(alphas_values)
 
