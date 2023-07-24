@@ -97,6 +97,7 @@ def pair_energy(radios, posiciones, epsilon, L):
     '''
     energía total del sistema de N partículas. Usando el potencial de Hertz
     '''
+    #return 0.0
     energia_total = 0.0 
     N = len(radios)
     distancias = np.zeros((N,N))
@@ -132,7 +133,7 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
     a0_array = np.full(N, a0) # valores iniciales de radios
     #cambio a valores de radio aleatorio
     for i in range(N):
-        alpha = np.random.uniform(1.1, 10.0)
+        alpha = 3.5 # np.random.uniform(1.1, 10.0)
         a0_array[i] *= alpha
         bf0[i] +=  bf(alpha, chi, N_m, N_ch)    
     
@@ -156,7 +157,10 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
             paso += 1
             j = np.random.randint(N) #elección partícula j al azar
             dx = L * (np.random.rand(3) - 0.5) # delta de movimiento
-            alpha = np.random.uniform(1.1, 10.0) #elección de un grado de swelling al azar
+            rn = np.random.uniform(0.0, 1.0) #elección de un grado de swelling al azar
+            alpha += (rn -0.5)*0.2 
+            if (alpha < 1.0):
+                alpha = 1.1
             #copiado para las posibles nuevas configuraciones
             x_new = posiciones.copy()
             radios_new = radios.copy()
@@ -183,7 +187,7 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
             Dtotal = Df + Dvh
             #print(Dtotal)
             
-            if Dtotal < 0 or np.random.rand() < np.exp(-beta * Dtotal):
+            if Dtotal < 0 or np.random.rand() < np.exp(-Dtotal):
                 acc += 1
                 posiciones = x_new.copy()
                 radios = radios_new.copy()
@@ -244,7 +248,8 @@ def simulacion_tp(steps, L, a0, epsilon, K, T):
             paso += 1
             j = np.random.randint(N) #elección partícula j al azar
             dx = L * (np.random.rand(3) - 0.5) # delta de movimiento
-            alpha = np.random.uniform(15.0, 100.0) #elección de un  de radio al azar
+            rn = np.random.uniform(0.0, 1.0) #elección de un  de radio al azar
+            alpha = radios[j] + (rn -0.5)*0.1 
             #copiado para las posibles nuevas configuraciones
             x_new = posiciones.copy()
             radios_new = radios.copy()
@@ -310,14 +315,14 @@ def guardar_datos(r,e):
 
 
 def histo_alphas(alphas_values):
-  plt.hist(alphas_values, bins=200)
+  plt.hist(alphas_values, bins=10)
   plt.xlabel('Alpha')
   plt.ylabel('Probabilidad')
   plt.title('Distribución de Probabilidad de Alpha')
   plt.show()
 
 # Parámetros globales para denton
-'''
+
 a0 = 10.0
 V = 45110592.60
 L = V**(1/3) # 355.98
@@ -326,11 +331,12 @@ chi = 0.0
 N_ch = 200
 K = 1.380649e-23
 T = 300
-'''
+epsilon = 1.5e3
 
 ########
 ### Modificacion del volumen... el de denton es mas chico!!!!
 ### es necesario trabajar con unidades reducidas ??
+'''
 a0 = 30.0
 #V = (500*8610000)/(0.602*dens) # 7151121600 
 V= 45110592.60 #prueba con el volumen de Denton
@@ -338,14 +344,15 @@ L = V**(1/3)
 epsilon = 1.5e3 
 K = 1.380649e-23
 T = 300
-
+'''
 ###########################
 
 # Ejecutar simulación
 #energyt, alphas_values = simulacion_tp(1000, L, a0, epsilon,K, T)
-#guardar_datos(alphas_values, energyt)
+
+enegyt, alphas_values = simulacion_denton(500, L, a0, epsilon, N_m, chi, N_ch, K, T)
 # histograma
-#histo_alphas(alphas_values)
+histo_alphas(alphas_values)
 
 
 
