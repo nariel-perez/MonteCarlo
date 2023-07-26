@@ -53,13 +53,14 @@ def pair_energy(radios, posiciones, epsilon, L):
 
 def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
     N = 500
+    alpha = 3.5
     p_totales = steps*N
     beta = 1 / (K * T) # No necesario 
     energyt = []
     alphas_values = []
     # podría ser otro valor, por lo que sería mejor: bf0 = [bi]*N , en donde bi es la energía inicial (distinta de cero)  
-    bf0 = np.zeros(N) + bf(3.5, chi, N_m, N_ch)
-    a0_array = np.full(N, a0)*3.5 # valores iniciales de radios   
+    bf0 = np.zeros(N) + bf(alpha, chi, N_m, N_ch)
+    a0_array = np.full(N, a0)*alpha # valores iniciales de radios   
     posiciones = L * np.random.rand(N, 3) #posiciones iniciales en la caja
     # Copia de los radios, para guardar los cambios nuevos
     radios = a0_array.copy()
