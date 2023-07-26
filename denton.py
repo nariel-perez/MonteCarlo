@@ -125,6 +125,7 @@ def pair_energy(radios, posiciones, epsilon, L):
 
 def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
     N = 500
+    p_totales = steps*N
     beta = 1 / (K * T) # No necesario 
     energyt = []
     alphas_values = []
@@ -158,7 +159,7 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
             j = np.random.randint(N) #elección partícula j al azar
             dx = L * (np.random.rand(3) - 0.5) # delta de movimiento
             rn = np.random.uniform(0.0, 1.0) #elección de un grado de swelling al azar
-            alpha += (rn -0.5)*0.2 
+            alpha += (rn -0.5)*0.02 
             if (alpha < 1.0):
                 alpha = 1.1
             #copiado para las posibles nuevas configuraciones
@@ -199,8 +200,9 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
                     energyt.append(ee)           
             
             if paso % 1000 == 0:
-                #energyt.append(ee)
+                porcentaje = (paso/p_totales)*100
                 print(f'paso: {paso}, energia total: {ee:.2f}')
+                print(f' Porcentaje de simulacion: {porcentaje:.2f}')
             
             
     
@@ -350,7 +352,7 @@ T = 300
 # Ejecutar simulación
 #energyt, alphas_values = simulacion_tp(1000, L, a0, epsilon,K, T)
 
-enegyt, alphas_values = simulacion_denton(500, L, a0, epsilon, N_m, chi, N_ch, K, T)
+enegyt, alphas_values = simulacion_denton(100, L, a0, epsilon, N_m, chi, N_ch, K, T)
 # histograma
 histo_alphas(alphas_values)
 
