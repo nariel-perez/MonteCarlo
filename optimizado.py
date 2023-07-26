@@ -74,7 +74,7 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
     acc = 0
     
     for i in range(steps):
-        for p in range(N)
+        for p in range(N):
             paso += 1
             j = np.random.randint(N) #elección partícula j al azar
             dx = L * (np.random.rand(3) - 0.5) # delta de movimiento
