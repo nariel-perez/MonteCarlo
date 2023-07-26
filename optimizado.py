@@ -58,15 +58,8 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
     energyt = []
     alphas_values = []
     # podría ser otro valor, por lo que sería mejor: bf0 = [bi]*N , en donde bi es la energía inicial (distinta de cero)  
-    bf0 = np.zeros(N)
-    a0_array = np.full(N, a0) # valores iniciales de radios
-    #cambio a valores de radio aleatorio
-    for i in range(N):
-        alpha = 3.5 # np.random.uniform(1.1, 10.0)
-        a0_array[i] *= alpha
-        bf0[i] +=  bf(alpha, chi, N_m, N_ch)    
-    
-    
+    bf0 = np.zeros(N) + bf(3.5, chi, N_m, N_ch)
+    a0_array = np.full(N, a0)*3.5 # valores iniciales de radios   
     posiciones = L * np.random.rand(N, 3) #posiciones iniciales en la caja
     # Copia de los radios, para guardar los cambios nuevos
     radios = a0_array.copy()
@@ -77,62 +70,47 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
     ee = np.sum(bf0) + vh0 #energía total inicial... sin utilidad en este punto.(?)
     print(vh0)
     print(ee)
-    
     paso = 0
     acc = 0
     
-    for i in range(steps):
-        for p in range(N):
-            paso += 1
-            j = np.random.randint(N) #elección partícula j al azar
-            dx = L * (np.random.rand(3) - 0.5) # delta de movimiento
-            rn = np.random.uniform(0.0, 1.0) #elección de un grado de swelling al azar
-            alpha += (rn -0.5)*0.02 
-            if (alpha < 1.0):
-                alpha = 1.1
-            #copiado para las posibles nuevas configuraciones
-            x_new = posiciones.copy()
-            radios_new = radios.copy()
-            bf_new = bf0.copy()
-            # Modificación de las variables
-            x_new[j, :] += dx
-            #Condiciones de contorno:
-            '''
-            SINTAXIS: a = np.where(condicion, x,y)
-            Si la condiciones es True: el valor de a es x, de ser False le asigna un valor de y.
-            Es decir si al mover la particula j se sale de la mitad de la caja (L/2) ajusta la variable a x_new[j,:] - L/2
-            de no salirse (condición False) no ajusta nada.
-            Del mismo modo se compara cuando la condición sea ser menor que L/2
-            '''
-            x_new[j, :] = np.where(x_new[j, :] > L/2, x_new[j, :] - L/2, x_new[j, :])
-            x_new[j, :] = np.where(x_new[j, :] < L/2, x_new[j, :] + L/2, x_new[j, :])
+for i in range(steps):
+    for p in range(N)
+        paso += 1
+        j = np.random.randint(N) #elección partícula j al azar
+        dx = L * (np.random.rand(3) - 0.5) # delta de movimiento
+        rn = np.random.uniform(0.0, 1.0) #elección de un grado de swelling al azar
+        alpha += (rn -0.5)*0.02 
+        alpha = np.where(alpha < 1.0, 1.1, alpha)
+        x_new = posiciones.copy()
+        radios_new = radios.copy()
+        bf_new = bf0.copy()
+        x_new[j, :] += dx
+        x_new[j, :] = np.where(x_new[j, :] > L/2, x_new[j, :] - L/2, x_new[j, :])
+        x_new[j, :] = np.where(x_new[j, :] < L/2, x_new[j, :] + L/2, x_new[j, :])
+        radios_new[j] *= alpha
+        bf_i = bf(alpha, chi, N_m, N_ch)
+        vh_i = pair_energy(radios_new, x_new, epsilon, L)
+        Df = bf_i - bf0[j]
+        Dvh = vh_i - vh0
+        Dtotal = Df + Dvh
             
-            radios_new[j] *= alpha
-            # Calculo de las nuevas energías. 
-            bf_i = bf(alpha, chi, N_m, N_ch)
-            vh_i = pair_energy(radios_new, x_new, epsilon, L)
-            Df = bf_i - bf0[j]
-            Dvh = vh_i - vh0
-            Dtotal = Df + Dvh
-            #print(Dtotal)
+        if Dtotal < 0 or np.random.rand() < np.exp(-Dtotal):
+            acc += 1
+            posiciones[j,:] += dx
+            radios[j] *= alpha
+            vh0 += Dvh
+            bf0[j] += Df
             
-            if Dtotal < 0 or np.random.rand() < np.exp(-Dtotal):
-                acc += 1
-                posiciones = x_new.copy()
-                radios = radios_new.copy()
-                vh0 = vh_i
-                bf0 = bf_new.copy()
-                ee = np.sum(bf0) + vh0
-                if paso > 500:
-                    alphas_values.append(alpha)
-                    energyt.append(ee)           
+            ee += Dtotal
+            
+            if paso > 500:
+                alphas_values.append(alpha)
+                energyt.append(ee)           
             
             if paso % 500 == 0:
                 porcentaje = (paso/p_totales)*100
                 print(f'paso: {paso}, energia total: {ee:.2f}')
                 print(f' Porcentaje de simulacion: {porcentaje:.2f}')
-            
-            
     
     print(paso, acc)
     
