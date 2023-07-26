@@ -7,7 +7,7 @@ Created on Wed Jul 26 09:49:38 2023
 """
 
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 
 
@@ -139,6 +139,15 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
     return energyt, alphas_values
 
 
+def histo_alphas(alphas_values, bins):
+  plt.hist(alphas_values, bins=bins)
+  plt.xlabel('Alpha')
+  plt.ylabel('Probabilidad')
+  plt.title('Distribución de Probabilidad de Alpha')
+  plt.show()
+
+
+
 a0 = 10.0
 V = 45110592.60
 L = V**(1/3) # 355.98
@@ -149,4 +158,5 @@ K = 1.380649e-23
 T = 300
 epsilon = 1.5e3
 
-enegyt, alphas_values = simulacion_denton(10, L, a0, epsilon, N_m, chi, N_ch, K, T)
+enegyt, alphas_values = simulacion_denton(20, L, a0, epsilon, N_m, chi, N_ch, K, T)
+histo_alphas(alphas_values,50)
