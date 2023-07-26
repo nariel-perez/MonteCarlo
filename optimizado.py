@@ -73,39 +73,39 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
     paso = 0
     acc = 0
     
-for i in range(steps):
-    for p in range(N)
-        paso += 1
-        j = np.random.randint(N) #elección partícula j al azar
-        dx = L * (np.random.rand(3) - 0.5) # delta de movimiento
-        rn = np.random.uniform(0.0, 1.0) #elección de un grado de swelling al azar
-        alpha += (rn -0.5)*0.02 
-        alpha = np.where(alpha < 1.0, 1.1, alpha)
-        x_new = posiciones.copy()
-        radios_new = radios.copy()
-        bf_new = bf0.copy()
-        x_new[j, :] += dx
-        x_new[j, :] = np.where(x_new[j, :] > L/2, x_new[j, :] - L/2, x_new[j, :])
-        x_new[j, :] = np.where(x_new[j, :] < L/2, x_new[j, :] + L/2, x_new[j, :])
-        radios_new[j] *= alpha
-        bf_i = bf(alpha, chi, N_m, N_ch)
-        vh_i = pair_energy(radios_new, x_new, epsilon, L)
-        Df = bf_i - bf0[j]
-        Dvh = vh_i - vh0
-        Dtotal = Df + Dvh
+    for i in range(steps):
+        for p in range(N)
+            paso += 1
+            j = np.random.randint(N) #elección partícula j al azar
+            dx = L * (np.random.rand(3) - 0.5) # delta de movimiento
+            rn = np.random.uniform(0.0, 1.0) #elección de un grado de swelling al azar
+            alpha += (rn -0.5)*0.02 
+            alpha = np.where(alpha < 1.0, 1.1, alpha)
+            x_new = posiciones.copy()
+            radios_new = radios.copy()
+            bf_new = bf0.copy()
+            x_new[j, :] += dx
+            x_new[j, :] = np.where(x_new[j, :] > L/2, x_new[j, :] - L/2, x_new[j, :])
+            x_new[j, :] = np.where(x_new[j, :] < L/2, x_new[j, :] + L/2, x_new[j, :])
+            radios_new[j] *= alpha
+            bf_i = bf(alpha, chi, N_m, N_ch)
+            vh_i = pair_energy(radios_new, x_new, epsilon, L)
+            Df = bf_i - bf0[j]
+            Dvh = vh_i - vh0
+            Dtotal = Df + Dvh
             
-        if Dtotal < 0 or np.random.rand() < np.exp(-Dtotal):
-            acc += 1
-            posiciones[j,:] += dx
-            radios[j] *= alpha
-            vh0 += Dvh
-            bf0[j] += Df
+            if Dtotal < 0 or np.random.rand() < np.exp(-Dtotal):
+                acc += 1
+                posiciones[j,:] += dx
+                radios[j] *= alpha
+                vh0 += Dvh
+                bf0[j] += Df
             
-            ee += Dtotal
+                ee += Dtotal
             
-            if paso > 500:
-                alphas_values.append(alpha)
-                energyt.append(ee)           
+                if paso > 500:
+                    alphas_values.append(alpha)
+                    energyt.append(ee)           
             
             if paso % 500 == 0:
                 porcentaje = (paso/p_totales)*100
