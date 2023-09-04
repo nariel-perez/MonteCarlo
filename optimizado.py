@@ -52,18 +52,19 @@ def pair_energy(radios, posiciones, epsilon, L):
 
 
 def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
-    N = 500
+    N = 50
     alpha = 3.5
     p_totales = steps*N
-    beta = 1 / (K * T) # No necesario 
+    #beta = 1 / (K * T) # No necesario 
     energyt = []
     alphas_values = []
     # podría ser otro valor, por lo que sería mejor: bf0 = [bi]*N , en donde bi es la energía inicial (distinta de cero)  
     bf0 = np.zeros(N) + bf(alpha, chi, N_m, N_ch)
-    a0_array = np.full(N, a0)*alpha # valores iniciales de radios   
+    radios = np.full(N, a0)*alpha # valores iniciales de radios
+    alphas = np.full(N, alpha) # lista de alphas iniciales
     posiciones = L * np.random.rand(N, 3) #posiciones iniciales en la caja
     # Copia de los radios, para guardar los cambios nuevos
-    radios = a0_array.copy()
+    #radios = a0_array.copy()
     #energias iniciales, no hay swelling. La energía de cada partícula es cero... casualmente
    
     #calculo de la energía inicial por la interacción de a pares. 
@@ -73,18 +74,19 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
     print(ee)
     paso = 0
     acc = 0
+    alpha_dict = {}
     
     for i in range(steps):
         for p in range(N):
             paso += 1
             j = np.random.randint(N) #elección partícula j al azar
             dx = L * (np.random.rand(3) - 0.5) # delta de movimiento
-            rn = np.random.uniform(0.0, 1.0) #elección de un grado de swelling al azar
-            alpha += (rn -0.5)*0.02 
+            rn = np.random.uniform(0.0, 1.0) # numero random de 0 a 1
+            alpha += (rn -0.5)*0.02 #cambio a un valor de alfa
             alpha = np.where(alpha < 1.0, 1.1, alpha)
             x_new = posiciones.copy()
             radios_new = radios.copy()
-            bf_new = bf0.copy()
+            #bf_new = bf0.copy()
             x_new[j, :] += dx
             x_new[j, :] = np.where(x_new[j, :] > L/2, x_new[j, :] - L/2, x_new[j, :])
             x_new[j, :] = np.where(x_new[j, :] < L/2, x_new[j, :] + L/2, x_new[j, :])
@@ -101,13 +103,21 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
                 radios[j] *= alpha
                 vh0 += Dvh
                 bf0[j] += Df
+                alphas[j] = alpha
             
                 ee += Dtotal
             
-                if paso > 500:
-                    alphas_values.append(alpha)
-                    energyt.append(ee)           
+               # if paso > 500:
+               #     alphas_values.append(alpha)
+                 #   energyt.append(ee)
+                    
+                    
+            if paso > 5000:
             
+                for a in alphas:
+                    if a not in alpha_dict:
+                        alpha_dict[a] = 0
+                    alpha_dict[a] += 1
             if paso % 500 == 0:
                 porcentaje = (paso/p_totales)*100
                 print(f'paso: {paso}, energia total: {ee:.2f}')
@@ -115,8 +125,9 @@ def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
     
     print(paso, acc)
     
-    return energyt, alphas_values
+    return energyt, alpha_dict
 
+        
 
 def histo_alphas(alphas_values, bins):
   plt.hist(alphas_values, bins=bins)
@@ -127,9 +138,22 @@ def histo_alphas(alphas_values, bins):
 
 
 
+
+def otro_his(alphas_dict,bins):
+    plt.hist(alphas_dict.keys(), bins = bins, weights= list(alphas_dict.values()))
+    plt.show()
+
+
 a0 = 10.0
+#para N = 10
+#V = 1804423.70
+#L = V**(1/3) # 355.98
+####
+
+### Para N = 500. volfrac = 2
 V = 45110592.60
 L = V**(1/3) # 355.98
+
 N_m = 2e5
 chi = 0.0
 N_ch = 200
@@ -137,5 +161,5 @@ K = 1.380649e-23
 T = 300
 epsilon = 1.5e3
 
-enegyt, alphas_values = simulacion_denton(20, L, a0, epsilon, N_m, chi, N_ch, K, T)
-histo_alphas(alphas_values,50)
+enegyt, alphas_dict = simulacion_denton(500, L, a0, epsilon, N_m, chi, N_ch, K, T)
+#histo_alphas(alphas_values,50)
