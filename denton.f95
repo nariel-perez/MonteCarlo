@@ -4,11 +4,11 @@ program denton
   
   integer:: imc,ip,i,j,ig,ntrials,nplot,nha,iq,nq
   integer:: att,acc,counter,nav,nwidom,neg,posit
-  integer:: ianew,iatrial,iamin,ipnew, Np,alfanew
-  integer,allocatable:: ia(:)    
+  integer:: ianew,iatrial,iamin,ipnew, Np
+  !integer,allocatable:: ia(:)    
   real(8),allocatable:: g(:),x(:),y(:),z(:),a(:),ha(:),Sq(:,:),alfas(:)
   real(8):: rn,rn4(4)
-  real(8):: xnew,ynew,znew,maxd,alfa
+  real(8):: xnew,ynew,znew,maxd,alfa,alfanew
   real(8):: u,uold,unew,uij,vij,deltau
   real(8):: ratio,wtest,uav,u2av
   real(8):: xtrial,ytrial,ztrial,atrial,utrial,qtrial
@@ -30,21 +30,29 @@ program denton
   Np = 10   
   max_mc = 5000
   eq_mc = 500
-
+  alfa = 3.5
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  
   call random_seed(size=i)
   allocate(seed(i))
   call random_seed(get=seed)
 
   seed=999
   call random_seed(put=seed)
+  
+  allocate(x(Np),y(Np),z(Np),a(Np),alfas(Np))
 
 
-
-  allocate(x(Np),y(Np),z(Np),a(Np),ia(Np),alfas(Np))
-
-  call set_MC_param(box,vol,rcut,dr,nplot,da,nha,maxd,maxda)
+  alfas = alfa
+  
+  call set_MC_param(Np, box,vol,rcut,dr,nplot,da,nha,maxd,maxda)
+  
   call initial_coordinates(x,y,z,Np,box)
 
+
+
+  
   do imc=1,max_mc ! loop over the # of MC steps
      
      do ip=1,Np ! MC step --> Np attempts to move randomly chosen particles
@@ -61,14 +69,12 @@ program denton
         ynew=y(i)+(rn4(2)-0.5)*maxd
         znew=z(i)+(rn4(3)-0.5)*maxd
 
-        alfanew=alfa +(rn4(4)-0.5)*maxda
+        alfanew=alfa + (rn4(4)-0.5)*maxda
+        
         if (alfanew == 1d0) alfanew = 1.1
         if (anew < 1d0) alfanew= 1.1
         anew =a(i)*alfanew
-       
-        
-          
-        
+         
           
         xnew=xnew-box*anint(xnew/box)
         ynew=ynew-box*anint(ynew/box)
@@ -77,8 +83,10 @@ program denton
 
         call df_alfa(alfa,bfold)
         bfold = bfold
+        
         call df_alfa(alfanew,bfnew)
         bfnew = bfnew
+        
         df=bfnew-bfold
         !write(*,*) 'antes', df
           
@@ -138,7 +146,9 @@ program denton
 
        write(100,*)imc,(bf+u)/dble(Np),bf/dble(Np),u/dble(Np)
 
-
+!!!!!!!!!!!!!!!!!!!!!!!!
+!!!! NO NECESARIO
+!!!!!!!!!!!!!!!!!!!!!
 
        if (mod(imc,1000)==0) then          
  
@@ -159,7 +169,8 @@ program denton
           
        endif
 
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!
 
 
        !............................................................
@@ -565,7 +576,7 @@ end program denton
 
 
 
-  subroutine df_alfa(alfa, bf)
+  subroutine df_alfa( alfa, bf)
     
     implicit none
     real(8)::chi = 0d0
@@ -593,19 +604,19 @@ end program denton
 
 
 
-  subroutine set_MC_param(box,vol,rcut,dr,nplot,da,nha,maxd,maxda)
+  subroutine set_MC_param(Np,box,vol,rcut,dr,nplot,da,nha,maxd,maxda)
     
 !!!*****************************************************************************
 !!!******************************************************************************
     
     implicit none
     
-    real(8),intent(in):: a0
+    integer,intent(in):: Np
 
     integer,intent(out):: nplot,nha
     
     real(8),intent(out):: box,vol,rcut,dr,maxd,da,maxda
-
+    real(8):: dens
 
 
     ! distances in sig units    
@@ -626,8 +637,8 @@ end program denton
     !maxd=1.0 ! in sig units
 
     
-    a_max=a_max/sig
-    a_min=a_min/sig
+    !a_max=a_max/sig
+    !a_min=a_min/sig
 
 
     !maxda=a0/sig/10d0
@@ -636,8 +647,9 @@ end program denton
 
     nha=500
     !nha = 100
-    da=(a_max-a_min)/dble(nha-1)
-
+    !da=(a_max-a_min)/dble(nha-1)
+    ! buscar equivalente con alfas
+     da = 0.1
     
 
     nplot=100    

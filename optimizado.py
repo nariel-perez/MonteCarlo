@@ -52,7 +52,7 @@ def pair_energy(radios, posiciones, epsilon, L):
 
 
 def simulacion_denton(steps, L, a0, epsilon, N_m, chi, N_ch, K, T):
-    N = 50
+    N = 500
     alpha = 3.5
     p_totales = steps*N
     #beta = 1 / (K * T) # No necesario 
