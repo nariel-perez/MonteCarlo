@@ -150,30 +150,30 @@ program denton
 !!!! NO NECESARIO
 !!!!!!!!!!!!!!!!!!!!!
 
-       if (mod(imc,1000)==0) then          
+!       if (mod(imc,1000)==0) then          
  
-          write(120,*)Np
-          write(120,*)
-          do ip=1,Np
-             call pbc(x(ip),y(ip),z(ip),box)
+!          write(120,*)Np
+!          write(120,*)
+!          do ip=1,Np
+!             call pbc(x(ip),y(ip),z(ip),box)
              
-             write(120,*)"LJ",x(ip),y(ip),z(ip)
-          enddo
-          
-          
-          write(chx12,"(1pe12.3e2)")real(u/dble(Np))
-          write(chx12b,"(1pe12.3e2)")real(bf/dble(Np))
-
-          write(*,'(4xa,i9,2(1xa,1xa10))')"step:",imc,"/ u:",&
-               trim(adjustl(chx12)),"/ f_MG:",trim(adjustl(chx12b))
-          
-       endif
-
+!             write(120,*)"LJ",x(ip),y(ip),z(ip)
+!          enddo
+!          
+!          
+!          write(chx12,"(1pe12.3e2)")real(u/dble(Np))
+!          write(chx12b,"(1pe12.3e2)")real(bf/dble(Np))
+!
+!          write(*,'(4xa,i9,2(1xa,1xa10))')"step:",imc,"/ u:",&
+!               trim(adjustl(chx12)),"/ f_MG:",trim(adjustl(chx12b))
+!          
+!       endif
+!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!
 
 
-       !............................................................
+      !............................................................
 
        
        ! modificacion de la caja y cambios en alfa
@@ -196,11 +196,12 @@ program denton
        
        !............................................................
 
-
+!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!
        
        if (imc>=eq_mc) then
 
-
+!!!!!!!!!!!!
           if (mod(imc,50)==0) then     ! take values every 50 MC steps
              uav=uav+u
              u2av=u2av+u*u
@@ -214,7 +215,7 @@ program denton
              nav=nav+1             
              
           endif
-         
+!!!!!!!!!!!!!!         
          
           
           ! Virial, Pressure & g(r) ...................................
@@ -266,23 +267,23 @@ program denton
 
 
 
-
-
+!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!
 !!! save final configuration
     
-    open(unit=121,file="final_config.xyz")    
-    write(121,*)Np
-    write(121,*)
-    do ip=1,Np
-       call pbc(x(ip),y(ip),z(ip),box)
-             
-       write(121,*)"LJ",x(ip),y(ip),z(ip),a(ip)
-    enddo
-    close(121)
-
-
-
-    
+!    open(unit=121,file="final_config.xyz")    
+!    write(121,*)Np
+!    write(121,*)
+!    do ip=1,Np
+!       call pbc(x(ip),y(ip),z(ip),box)
+!             
+!       write(121,*)"LJ",x(ip),y(ip),z(ip),a(ip)
+!    enddo
+!    close(121)
+!
+!
+!
+!   
 !!!................................................
 !!!................................................
 
